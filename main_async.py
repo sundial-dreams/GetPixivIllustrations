@@ -32,7 +32,7 @@ def make_tag_dir(dir_name, pathname=normal_path):
 
 # 评分高的图片
 def highQualityCallback(value):
-    return value.total_view >= total_view and value.total_bookmarks >= total_bookmarks and value.type == "illust"
+    return value.TOTAL_VIEW >= total_view and value.TOTAL_BOOKMARKS >= total_bookmarks and value.type == "illust"
 
 
 #  标签里面可能有 ABC/dd名称，需要将"/"转化掉
