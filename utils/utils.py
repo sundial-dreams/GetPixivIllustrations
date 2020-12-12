@@ -3,8 +3,8 @@ from types import FunctionType
 from pixivpy3 import *
 import time
 from shutil import rmtree
+from datetime import datetime
 from .constants import MIN_FILES
-
 import os
 from .constants import TOTAL_VIEW, TOTAL_BOOKMARKS, ILLEGAL_CHARS
 
@@ -15,13 +15,14 @@ def exception(callback: Callable) -> Callable:
         try:
             results = callback(*args, **kwargs)
         except PixivError as e:
+            log(e)
             return results, e
         return results, None
 
     return wrapper
 
 
-def make_tag_dir(dir_name, path):
+def make_tag_dir(dir_name, path) -> str:
     path = os.path.join(path, dir_name)
     if os.path.exists(path):
         return False
@@ -30,13 +31,15 @@ def make_tag_dir(dir_name, path):
 
 
 # 评分高的图片
-def highQualityCallback(value):
+def highQualityCallback(value) -> bool:
     return value.total_view >= TOTAL_VIEW and value.total_bookmarks >= TOTAL_BOOKMARKS and value.type == "illust"
 
 
 # 评分低的图片
-def lowQualityCallback(value):
+def lowQualityCallback(value) -> bool:
     return value.total_view < TOTAL_VIEW and value.total_bookmarks < TOTAL_BOOKMARKS and value.type == "illust"
+
+
 #  标签里面可能有 ABC/dd名称，需要将"/"转化掉
 def check_name(pathname: str) -> bool:
     for ic in ILLEGAL_CHARS:
@@ -58,6 +61,7 @@ def is_less(result: list) -> bool:
         return True
     return False
 
+
 # 移除图片少的标签
 def rm_less_tags(pathname: str) -> None:
     ls_dir = [d for d in os.listdir(pathname) if os.path.isdir(os.path.join(pathname, d))]
@@ -66,3 +70,13 @@ def rm_less_tags(pathname: str) -> None:
         size = len(os.listdir(path))
         if size < MIN_FILES:
             rmtree(path)
+
+
+def log(msg: Any) -> None:
+    with open(os.path.join(os.curdir, "log.txt"), "a+") as f:
+        f.writelines("- [%s]: %s\n" % (datetime.now().strftime('%Y/%m/%d %H:%M:%S'), msg))
+
+
+def checkpoint(record: str) -> None:
+    with open(os.path.join(os.curdir, "checkpoint.txt"), "a+") as f:
+        f.writelines("- [%s]: %s\n" % (datetime.now().strftime('%Y/%m/%d %H:%M:%S'), record))

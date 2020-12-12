@@ -1,7 +1,9 @@
 import os
+import time
 from pixivpy3 import *
 from utils.bfser import bfsIllustsOfUser, bfsIllustsByRelated
-from utils.utils import rm_less_tags
+from utils.utils import rm_less_tags, checkpoint, log
+
 usernames = [
     # "ふーみ",
     # "Hiten",
@@ -15,12 +17,12 @@ usernames = [
     # "Rosuuri",
     # "ふわり",
     # "きさらぎゆり",
-    # "Roha",
-    # "mocha＠３日目南-ナ31a",
-    # "コーラ",
+    "Roha",
+    "mocha＠３日目南-ナ31a",
+    "コーラ",
     "ふゆの",
-    # "Rafa",
-    # "ke-ta"
+    "Rafa",
+    "ke-ta"
 ]
 
 illustrations = [
@@ -40,7 +42,17 @@ illustrations = [
     # 36385948,
     # 64481817,
     # 44920385,
-    77944010
+    # 77944010
+    # 47621790,
+    # 59190594,
+    # 76596270,
+    # 82432085,
+    # 62854107,
+    76916493,
+    54652001,
+    63629527,
+    44873217,
+    81187455,
 ]
 
 USERNAME = "dreamers.dpf@gmail.com"
@@ -52,6 +64,7 @@ related_datasets_path = os.path.curdir + "/related_datasets"
 
 api = AppPixivAPI()
 api.login(username=USERNAME, password=PASSWORD)
+
 
 def runScriptOfUser():
     user_normal_path = user_datasets_path + "/normal"
@@ -67,10 +80,13 @@ def runScriptOfUser():
     try:
         for username in usernames:
             cur_name = username
+            checkpoint("downloaded user: %s" % username)
             bfsIllustsOfUser(api, username, user_datasets_path)
+
             # time.sleep(60)  # 歇息1分钟再去下载另一位画师
 
-    except OSError as e:
+    except Exception as e:
+        log(e)
         print("next_username := ", cur_name)
 
     rm_less_tags(user_normal_path)
@@ -91,8 +107,11 @@ def runScriptOfRelated():
     try:
         for illust in illustrations:
             cur_id = illust
+            checkpoint("downloaded illust: %s" % illust)
             bfsIllustsByRelated(api, illust, related_datasets_path)
-    except OSError as e:
+
+    except Exception as e:
+        log(e)
         print("next_id := ", cur_id)
 
     rm_less_tags(related_normal_path)
@@ -100,4 +119,6 @@ def runScriptOfRelated():
 
 
 if __name__ == "__main__":
+    # runScriptOfRelated()
+    # time.sleep(60)
     runScriptOfUser()

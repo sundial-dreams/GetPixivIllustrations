@@ -1,5 +1,5 @@
 from pixivpy3 import *
-from utils.utils import exception
+from utils.utils import exception, log, checkpoint
 
 if __name__ == "__main__":
     api = AppPixivAPI()
@@ -12,20 +12,20 @@ if __name__ == "__main__":
     # api.download("https://i.pximg.net/c/600x1200_90_webp/img-master/img/2020/12/09/00/57/06/86183261_p0_master1200.jpg")
     r, e = exception(api.search_user)("ふーみ")
     if e is not None:
-        print(e)
+        log(e)
     print(r)
-    user_id = r.user_previews[0].user.id
+    user_id = ""
     print(user_id)
 
     r, e = exception(api.user_following)(user_id)
     if e is not None:
-        print(e)
+        checkpoint("some")
 
     print(r)
 
-    r, e = exception(api.user_follower(user_id))
+    r, e = exception(api.user_follower)(user_id)
     if e is not None:
-        print(e)
+        log(e)
     print(r)
 
     # api.user_illusts()

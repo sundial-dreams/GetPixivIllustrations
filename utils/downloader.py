@@ -27,13 +27,16 @@ def downloadIllusts(api: AppPixivAPI, image_results: list, quality, pathname) ->
         normal_tags = [rename(t.name) for t in image_tags]
         translate_tags = [rename(t.translated_name) for t in image_tags if t.translated_name is not None]
 
+        if len(normal_tags) == 0:
+            continue
+
         for t in normal_tags:
             all_image_tags.add(t)
             make_tag_dir(t, path=n_path)
+
         for t in translate_tags:
             make_tag_dir(t, path=t_path)
-        if len(normal_tags) == 0:
-            normal_tags.append("__unknown__")
+
         image_normal_path = os.path.join(n_path, normal_tags[0] + "/")
         # image_translate_path = os.path.join(translate_path, translate_tags[0] + "/")
         # 这张图片已经下载过
